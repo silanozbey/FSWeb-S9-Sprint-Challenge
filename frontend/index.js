@@ -10,7 +10,7 @@ const root = createRoot(container)
 
 root.render(
   <BrowserRouter>
-    <h1>GRID'e hoşgeldiniz</h1>
+    <h1>GRID'e Hoşgeldiniz!</h1>
     <Routes>
       <Route path="/" element={<AppFunctional className="functional" />} />
     </Routes>

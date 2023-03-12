@@ -83,11 +83,11 @@ Bu challengeda bir [WIDGET](https://advanced-react-grid.herokuapp.com/) için bi
   ```js
   // Bir gridi temsil etmek için düz bir dizi kullanılabilir.
   // Ancak Uygulama bileşenimizin tüm diziyi izlemesi gerekmez, yalnızca "B"nin olduğu dizini izlemesi gerekir.
-  [null, null, null, null, "B", null, null, null, null]
+  [null, null, null, null, "Ş", null, null, null, null]
 
   // Bir gridi temsil etmek için 2 boyutlu diziler veya matrisler kullanılabilir, ancak bu, bu projede önerilmez:
-  [[null, null, null], [null, "B", null], [null, null, null]]
+  [[null, null, null], [null, "Ş", null], [null, null, null]]
 
   // Bir string de işe yarayabilir, ancak JS'deki stringler değişmezdir ve bu yaklaşımı elverişsiz hale getirir:
-  "xxxxBxxxx"
+  "xxxxŞxxxx"
   ```

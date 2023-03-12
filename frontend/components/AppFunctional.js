@@ -1,76 +1,114 @@
-import React from 'react'
+import axios from 'axios';
+import React, {useState} from 'react'
 
-// önerilen başlangıç stateleri
-const initialMessage = ''
-const initialEmail = ''
-const initialSteps = 0
-const initialIndex = 4 //  "B" nin bulunduğu indexi
 
 export default function AppFunctional(props) {
-  // AŞAĞIDAKİ HELPERLAR SADECE ÖNERİDİR.
-  // Bunları silip kendi mantığınızla sıfırdan geliştirebilirsiniz.
 
-  function getXY() {
-    // Koordinatları izlemek için bir state e sahip olmak gerekli değildir.
-    // Bunları hesaplayabilmek için "B" nin hangi indexte olduğunu bilmek yeterlidir.
+  const initialState = [2,2]
+  const [konum, setKonum] = useState(initialState);
+  const [hamleSayisi, setHamleSayisi] = useState(0);
+  const [errMessage, setErrMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const konumAsIndex = (konum[1] -1) * 4 + konum[0] -1;
+
+
+  function sagaGit() {
+    if(konum[0]<4){
+      setKonum([konum[0]+1, konum[1]]);
+    setHamleSayisi(hamleSayisi+1)
+    }else{
+      setErrMessage("Sağa Gidemezsiniz")
+    }
   }
 
-  function getXYMesaj() {
-    // Kullanıcı için "Koordinatlar (2, 2)" mesajını izlemek için bir state'in olması gerekli değildir.
-    // Koordinatları almak için yukarıdaki "getXY" helperını ve ardından "getXYMesaj"ı kullanabilirsiniz.
-    // tamamen oluşturulmuş stringi döndürür.
+  function solaGit() {
+    if(konum[0]>1){
+      setKonum([konum[0]-1, konum[1]]);
+      setHamleSayisi(hamleSayisi+1)
+    }else{
+      setErrMessage("Sola Gidemezsiniz")
+    }
+  }
+
+  function asagiGit() {
+    if(konum[1]<4){
+      setKonum([konum[0], konum[1]+1]) ;
+      setHamleSayisi(hamleSayisi+1)
+    }else{
+      setErrMessage("Aşağı Gidemezsiniz")
+    }
+  }
+
+  function yukariGit() {
+    if(konum[1]>1){
+      setKonum([konum[0], konum[1]-1]) ;
+      setHamleSayisi(hamleSayisi+1)
+    }else{
+      setErrMessage("Yukarı Gidemezsiniz")
+    }
   }
 
   function reset() {
-    // Tüm stateleri başlangıç ​​değerlerine sıfırlamak için bu helperı kullanın.
+      setKonum(initialState) ;
+      setHamleSayisi(0);
   }
 
-  function sonrakiIndex(yon) {
-    // Bu helper bir yön ("sol", "yukarı", vb.) alır ve "B" nin bir sonraki indeksinin ne olduğunu hesaplar.
-    // Gridin kenarına ulaşıldığında başka gidecek yer olmadığı için,
-    // şu anki indeksi değiştirmemeli.
-  }
+  const handleEmail = (event) => {
+    setEmail(event.target.value)
+  };
 
-  function ilerle(evt) {
-    // Bu event handler, "B" için yeni bir dizin elde etmek üzere yukarıdaki yardımcıyı kullanabilir,
-    // ve buna göre state i değiştirir.
-  }
+  const handleSubmit = (event) => {
 
-  function onChange(evt) {
-    // inputun değerini güncellemek için bunu kullanabilirsiniz
-  }
+    event.preventDefault();
 
-  function onSubmit(evt) {
-    // payloadu POST etmek için bir submit handlera da ihtiyacınız var.
+    const result = {
+      x : konum[0],
+      y : konum[1],
+      steps : hamleSayisi,
+      email : email
+    };
+
+    axios
+      .post("http://localhost:9000/api/result", result)
+      .then((res) => {
+        console.log(res.data);
+        reset();
+      })
+      .catch(() => {
+        console.log("Unprocessable Entity");
+      })
   }
 
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Koordinatlar (2, 2)</h3>
-        <h3 id="steps">0 kere ilerlediniz</h3>
+        <h3 id="coordinates">Koordinatlar {konum[0]},{konum[1]} </h3>
+        <h3 id="steps">{hamleSayisi} kere ilerlediniz</h3>
       </div>
       <div id="grid">
         {
-          [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-            <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-              {idx === 4 ? 'B' : null}
+          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(idx => (
+            <div key={idx} className={`square${idx === konumAsIndex ? ' active' : ''}`}>
+             <span style={{fontSize : "20px", marginRight : "10px"}}></span> {idx === konumAsIndex ? 'Ş' : null}
             </div>
           ))
         }
       </div>
-      <div className="info">
-        <h3 id="message"></h3>
-      </div>
+      {
+        errMessage &&
+        <div className="info">
+          <h3 id="message">{errMessage}</h3>
+        </div>
+      }
       <div id="keypad">
-        <button id="left">SOL</button>
-        <button id="up">YUKARI</button>
-        <button id="right">SAĞ</button>
-        <button id="down">AŞAĞI</button>
-        <button id="reset">reset</button>
+        <button id="left" onClick={solaGit}>SOL</button>
+        <button id="up" onClick={yukariGit}>YUKARI</button>
+        <button id="right" onClick={sagaGit}>SAĞ</button>
+        <button id="down" onClick={asagiGit}>AŞAĞI</button>
+        <button id="reset" onClick={reset}>reset</button>
       </div>
-      <form>
-        <input id="email" type="email" placeholder="email girin"></input>
+      <form onSubmit={handleSubmit}>
+        <input id="email"  type="email" onChange={handleEmail} placeholder="email girin"></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
